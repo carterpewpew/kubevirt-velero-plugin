@@ -754,17 +754,23 @@ func GetKubevirt(kvClient kubecli.KubevirtClient) *kv1.KubeVirt {
 // InitDefaultMachineType sets DefaultMachineType from KVP_DEFAULT_MACHINE_TYPE or from worker node
 // architecture (first schedulable node with arch, else any node; see also Status.NodeInfo and label kubernetes.io/arch).
 func InitDefaultMachineType(client kubernetes.Interface) {
-	if v := strings.TrimSpace(os.Getenv(defaultMachineTypeEnv)); v != "" {
-		DefaultMachineType = v
-		fmt.Fprintf(ginkgo.GinkgoWriter, "DefaultMachineType (from %s env): %s\n", defaultMachineTypeEnv, DefaultMachineType)
-		return
-	}
 	arch, err := detectClusterArchitecture(client)
 	if err != nil {
-		fmt.Fprintf(ginkgo.GinkgoWriter, "WARNING: failed to detect cluster architecture, defaulting to %s: %v\n", DefaultMachineType, err)
+		fmt.Fprintf(ginkgo.GinkgoWriter, "WARNING: failed to detect cluster architecture: %v\n", err)
+	} else {
+		ClusterArchitecture = arch
+	}
+
+	if v := strings.TrimSpace(os.Getenv(defaultMachineTypeEnv)); v != "" {
+		DefaultMachineType = v
+		fmt.Fprintf(ginkgo.GinkgoWriter, "DefaultMachineType (from %s env): %s (detected arch: %s)\n", defaultMachineTypeEnv, DefaultMachineType, ClusterArchitecture)
 		return
 	}
-	ClusterArchitecture = arch
+
+	if err != nil {
+		fmt.Fprintf(ginkgo.GinkgoWriter, "WARNING: no arch detected and no %s env, defaulting machine type to %s\n", defaultMachineTypeEnv, DefaultMachineType)
+		return
+	}
 	switch arch {
 	case "s390x":
 		DefaultMachineType = "s390-ccw-virtio"
