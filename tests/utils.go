@@ -113,6 +113,93 @@ var newVMSpecBlankDVTemplate = func(vmName, size string) *kvv1.VirtualMachine {
 	}
 }
 
+// newVMSpecBootableDVTemplate returns a VM spec that can actually boot.
+// On s390x blank disks have no IPL record and the VM immediately crashes,
+// so we substitute a lightweight alpine registry image.  On every other
+// architecture the blank source is kept (qemu idles at the BIOS screen).
+var newVMSpecBootableDVTemplate = func(vmName, size string) *kvv1.VirtualMachine {
+	if framework.ClusterArchitecture != "s390x" {
+		return newVMSpecBlankDVTemplate(vmName, size)
+	}
+
+	nodePullMethod := cdiv1.RegistryPullNode
+	alpineURL := framework.AlpineUrl
+	bootableSize := "1Gi"
+
+	var zero int64 = 0
+	return &kvv1.VirtualMachine{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: vmName,
+		},
+		Spec: kvv1.VirtualMachineSpec{
+			RunStrategy: ptr.To(kvv1.RunStrategyHalted),
+			Template: &kvv1.VirtualMachineInstanceTemplateSpec{
+				ObjectMeta: metav1.ObjectMeta{
+					Name: vmName,
+				},
+				Spec: kvv1.VirtualMachineInstanceSpec{
+					Domain: kvv1.DomainSpec{
+						Resources: kvv1.ResourceRequirements{
+							Requests: v1.ResourceList{
+								v1.ResourceName(v1.ResourceMemory): resource.MustParse("256M"),
+							},
+						},
+						Machine: &kvv1.Machine{
+							Type: framework.DefaultMachineType,
+						},
+						Devices: kvv1.Devices{
+							Disks: []kvv1.Disk{
+								{
+									Name: "volume0",
+									DiskDevice: kvv1.DiskDevice{
+										Disk: &kvv1.DiskTarget{
+											Bus: "virtio",
+										},
+									},
+								},
+							},
+						},
+					},
+					Volumes: []kvv1.Volume{
+						{
+							Name: "volume0",
+							VolumeSource: kvv1.VolumeSource{
+								DataVolume: &kvv1.DataVolumeSource{
+									Name: vmName + "-dv",
+								},
+							},
+						},
+					},
+					TerminationGracePeriodSeconds: &zero,
+				},
+			},
+			DataVolumeTemplates: []kvv1.DataVolumeTemplateSpec{
+				{
+					ObjectMeta: metav1.ObjectMeta{
+						Name: vmName + "-dv",
+					},
+					Spec: cdiv1.DataVolumeSpec{
+						Source: &cdiv1.DataVolumeSource{
+							Registry: &cdiv1.DataVolumeSourceRegistry{
+								URL:        &alpineURL,
+								PullMethod: &nodePullMethod,
+							},
+						},
+						PVC: &v1.PersistentVolumeClaimSpec{
+							AccessModes: []v1.PersistentVolumeAccessMode{v1.ReadWriteOnce},
+							Resources: v1.VolumeResourceRequirements{
+								Requests: v1.ResourceList{
+									v1.ResourceName(v1.ResourceStorage): resource.MustParse(bootableSize),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
 var newVMSpec = func(vmName, size string, volumeSource kvv1.VolumeSource) *kvv1.VirtualMachine {
 	var zero int64 = 0
 	return &kvv1.VirtualMachine{

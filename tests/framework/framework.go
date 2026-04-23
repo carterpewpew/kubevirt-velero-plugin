@@ -52,6 +52,7 @@ var (
 	BackupScriptInstance = &BackupScript{}
 	reporter             = NewKubernetesReporter()
 	DefaultMachineType   = "q35"
+	ClusterArchitecture  string
 )
 
 // Framework supports common operations used by functional/e2e tests. It holds the k8s and cdi clients,
@@ -763,6 +764,7 @@ func InitDefaultMachineType(client kubernetes.Interface) {
 		fmt.Fprintf(ginkgo.GinkgoWriter, "WARNING: failed to detect cluster architecture, defaulting to %s: %v\n", DefaultMachineType, err)
 		return
 	}
+	ClusterArchitecture = arch
 	switch arch {
 	case "s390x":
 		DefaultMachineType = "s390-ccw-virtio"

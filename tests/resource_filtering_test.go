@@ -450,7 +450,7 @@ var _ = Describe("Resource includes", func() {
 
 			It("[test_id:10188]Selecting VM+DV+PVC: Backing up VM should fail if the VM is running", func() {
 				By("Creating VirtualMachines")
-				vmSpec := newVMSpecBlankDVTemplate(includedVMName, "100Mi")
+				vmSpec := newVMSpecBootableDVTemplate(includedVMName, "100Mi")
 				_, err := framework.CreateVirtualMachineFromDefinition(f.KvClient, f.Namespace.Name, vmSpec)
 				Expect(err).ToNot(HaveOccurred())
 				framework.EventuallyDVWith(f.KvClient, f.Namespace.Name, vmSpec.Spec.DataVolumeTemplates[0].Name, 180, HaveSucceeded())
@@ -470,7 +470,7 @@ var _ = Describe("Resource includes", func() {
 
 			It("[test_id:10189]Selecting VM+VMI but not Pod: Backing up should fail if the VM is running", func() {
 				By("Creating VirtualMachines")
-				vmSpec := newVMSpecBlankDVTemplate(includedVMName, "100Mi")
+				vmSpec := newVMSpecBootableDVTemplate(includedVMName, "100Mi")
 				_, err := framework.CreateVirtualMachineFromDefinition(f.KvClient, f.Namespace.Name, vmSpec)
 				Expect(err).ToNot(HaveOccurred())
 				framework.EventuallyDVWith(f.KvClient, f.Namespace.Name, vmSpec.Spec.DataVolumeTemplates[0].Name, 180, HaveSucceeded())
@@ -546,7 +546,7 @@ var _ = Describe("Resource includes", func() {
 
 			It("[test_id:10191]Selecting VM+VMI but not Pod: Backing up should succeed if the VM is paused", func() {
 				By("Creating VirtualMachines")
-				vmSpec := newVMSpecBlankDVTemplate("test-vm", "100Mi")
+				vmSpec := newVMSpecBootableDVTemplate("test-vm", "100Mi")
 				vmIncluded, err := framework.CreateVirtualMachineFromDefinition(f.KvClient, f.Namespace.Name, vmSpec)
 				Expect(err).ToNot(HaveOccurred())
 				volumeName := vmSpec.Spec.DataVolumeTemplates[0].Name
@@ -608,7 +608,7 @@ var _ = Describe("Resource includes", func() {
 
 			It("[test_id:10192]Selecting VM but not VMI or Pod: Backing up should fail if the VM is running", func() {
 				By("Creating VirtualMachines")
-				vmSpec := newVMSpecBlankDVTemplate(includedVMName, "100Mi")
+				vmSpec := newVMSpecBootableDVTemplate(includedVMName, "100Mi")
 				_, err := framework.CreateVirtualMachineFromDefinition(f.KvClient, f.Namespace.Name, vmSpec)
 				Expect(err).ToNot(HaveOccurred())
 				framework.EventuallyDVWith(f.KvClient, f.Namespace.Name, vmSpec.Spec.DataVolumeTemplates[0].Name, 180, HaveSucceeded())
@@ -628,7 +628,7 @@ var _ = Describe("Resource includes", func() {
 
 			It("[test_id:10193]Selecting VM but not VMI and Pod: Backing up should succeed if the VM is paused", func() {
 				By("Creating VirtualMachines")
-				vmSpec := newVMSpecBlankDVTemplate("test-vm", "100Mi")
+				vmSpec := newVMSpecBootableDVTemplate("test-vm", "100Mi")
 				vmIncluded, err := framework.CreateVirtualMachineFromDefinition(f.KvClient, f.Namespace.Name, vmSpec)
 				Expect(err).ToNot(HaveOccurred())
 				framework.EventuallyDVWith(f.KvClient, f.Namespace.Name, vmSpec.Spec.DataVolumeTemplates[0].Name, 180, HaveSucceeded())
@@ -865,7 +865,7 @@ var _ = Describe("Resource includes", func() {
 
 			It("[test_id:10198]Selecting VMI (with DV+PVC+Pod) but not VM: Empty backup without failure", func() {
 				By("Creating VirtualMachine")
-				vmSpec := newVMSpecBlankDVTemplate(includedVMName, "100Mi")
+				vmSpec := newVMSpecBootableDVTemplate(includedVMName, "100Mi")
 				_, err := framework.CreateVirtualMachineFromDefinition(f.KvClient, f.Namespace.Name, vmSpec)
 				Expect(err).ToNot(HaveOccurred())
 				framework.EventuallyDVWith(f.KvClient, f.Namespace.Name, vmSpec.Spec.DataVolumeTemplates[0].Name, 180, HaveSucceeded())
@@ -900,7 +900,7 @@ var _ = Describe("Resource includes", func() {
 
 			It("[test_id:10199]Selecting VMI (without DV+PVC+Pod) but not VM: Empty backup without failure", func() {
 				By("Creating VirtualMachine")
-				vmSpec := newVMSpecBlankDVTemplate(includedVMName, "100Mi")
+				vmSpec := newVMSpecBootableDVTemplate(includedVMName, "100Mi")
 				_, err := framework.CreateVirtualMachineFromDefinition(f.KvClient, f.Namespace.Name, vmSpec)
 				Expect(err).ToNot(HaveOccurred())
 				framework.EventuallyDVWith(f.KvClient, f.Namespace.Name, vmSpec.Spec.DataVolumeTemplates[0].Name, 180, HaveSucceeded())
@@ -1779,7 +1779,7 @@ var _ = Describe("Resource excludes", func() {
 		Context("VM with DVTemplates", func() {
 			It("[test_id:10217]Pods excluded, VM running: backup should fail", func() {
 				By("Creating VirtualMachines")
-				vmSpec := newVMSpecBlankDVTemplate(includedVMName, "100Mi")
+				vmSpec := newVMSpecBootableDVTemplate(includedVMName, "100Mi")
 				_, err := framework.CreateVirtualMachineFromDefinition(f.KvClient, f.Namespace.Name, vmSpec)
 				Expect(err).ToNot(HaveOccurred())
 				framework.EventuallyDVWith(f.KvClient, f.Namespace.Name, vmSpec.Spec.DataVolumeTemplates[0].Name, 180, HaveSucceeded())
@@ -1798,7 +1798,7 @@ var _ = Describe("Resource excludes", func() {
 
 			It("[test_id:10218]Pods+DV excluded, VM running: backup should fail", func() {
 				By("Creating VirtualMachines")
-				vmSpec := newVMSpecBlankDVTemplate("test-vm", "100Mi")
+				vmSpec := newVMSpecBootableDVTemplate("test-vm", "100Mi")
 				_, err := framework.CreateVirtualMachineFromDefinition(f.KvClient, f.Namespace.Name, vmSpec)
 				Expect(err).ToNot(HaveOccurred())
 				framework.EventuallyDVWith(f.KvClient, f.Namespace.Name, vmSpec.Spec.DataVolumeTemplates[0].Name, 180, HaveSucceeded())
@@ -1818,7 +1818,7 @@ var _ = Describe("Resource excludes", func() {
 
 			It("DV/PVC excluded, VM running: backup should succeed if MetadataBackupLabel is used", func() {
 				By("Creating VirtualMachines")
-				vmSpec := newVMSpecBlankDVTemplate("test-vm", "100Mi")
+				vmSpec := newVMSpecBootableDVTemplate("test-vm", "100Mi")
 				_, err := framework.CreateVirtualMachineFromDefinition(f.KvClient, f.Namespace.Name, vmSpec)
 				Expect(err).ToNot(HaveOccurred())
 				framework.EventuallyDVWith(f.KvClient, f.Namespace.Name, vmSpec.Spec.DataVolumeTemplates[0].Name, 180, HaveSucceeded())
@@ -1843,7 +1843,7 @@ var _ = Describe("Resource excludes", func() {
 					Skip("Test worth testing only without GC")
 				}
 				By("Creating VirtualMachines")
-				vmSpec := newVMSpecBlankDVTemplate("test-vm", "100Mi")
+				vmSpec := newVMSpecBootableDVTemplate("test-vm", "100Mi")
 				vmIncluded, err := framework.CreateVirtualMachineFromDefinition(f.KvClient, f.Namespace.Name, vmSpec)
 				Expect(err).ToNot(HaveOccurred())
 				framework.EventuallyDVWith(f.KvClient, f.Namespace.Name, vmSpec.Spec.DataVolumeTemplates[0].Name, 180, HaveSucceeded())
@@ -1890,7 +1890,7 @@ var _ = Describe("Resource excludes", func() {
 					Skip("Test worth testing only without GC")
 				}
 				By("Creating VirtualMachines")
-				vmSpec := newVMSpecBlankDVTemplate("test-vm", "100Mi")
+				vmSpec := newVMSpecBootableDVTemplate("test-vm", "100Mi")
 				vmIncluded, err := framework.CreateVirtualMachineFromDefinition(f.KvClient, f.Namespace.Name, vmSpec)
 				Expect(err).ToNot(HaveOccurred())
 				framework.EventuallyDVWith(f.KvClient, f.Namespace.Name, vmSpec.Spec.DataVolumeTemplates[0].Name, 180, HaveSucceeded())
@@ -2037,7 +2037,7 @@ var _ = Describe("Resource excludes", func() {
 
 			It("[test_id:10223]VMI excluded, Pod not excluded: backup should fail", func() {
 				By("Creating VirtualMachines")
-				vmSpec := newVMSpecBlankDVTemplate("test-vm", "100Mi")
+				vmSpec := newVMSpecBootableDVTemplate("test-vm", "100Mi")
 				_, err := framework.CreateVirtualMachineFromDefinition(f.KvClient, f.Namespace.Name, vmSpec)
 				Expect(err).ToNot(HaveOccurred())
 				framework.EventuallyDVWith(f.KvClient, f.Namespace.Name, vmSpec.Spec.DataVolumeTemplates[0].Name, 180, HaveSucceeded())
@@ -2179,7 +2179,7 @@ var _ = Describe("Resource excludes", func() {
 
 			It("[test_id:10227]Running VM excluded: empty backup without failure", func() {
 				By("Creating VirtualMachines")
-				vmSpec := newVMSpecBlankDVTemplate(includedVMName, "100Mi")
+				vmSpec := newVMSpecBootableDVTemplate(includedVMName, "100Mi")
 				_, err := framework.CreateVirtualMachineFromDefinition(f.KvClient, f.Namespace.Name, vmSpec)
 				Expect(err).ToNot(HaveOccurred())
 				framework.EventuallyDVWith(f.KvClient, f.Namespace.Name, vmSpec.Spec.DataVolumeTemplates[0].Name, 180, HaveSucceeded())
@@ -2745,7 +2745,7 @@ var _ = Describe("Resource excludes", func() {
 		Context("VM with DVTemplates", func() {
 			It("[test_id:10248]VM included, VMI excluded: should fail if VM is running", func() {
 				By("Creating VirtualMachines")
-				vmSpec := newVMSpecBlankDVTemplate("test-vm", "100Mi")
+				vmSpec := newVMSpecBootableDVTemplate("test-vm", "100Mi")
 				_, err := framework.CreateVirtualMachineFromDefinition(f.KvClient, f.Namespace.Name, vmSpec)
 				Expect(err).ToNot(HaveOccurred())
 				framework.EventuallyDVWith(f.KvClient, f.Namespace.Name, vmSpec.Spec.DataVolumeTemplates[0].Name, 180, HaveSucceeded())
@@ -3004,7 +3004,7 @@ var _ = Describe("Resource excludes", func() {
 
 			It("[test_id:10254]VMI included, VM excluded: empty backup without failure", func() {
 				By("Creating VirtualMachines")
-				vmSpec := newVMSpecBlankDVTemplate("test-vm", "100Mi")
+				vmSpec := newVMSpecBootableDVTemplate("test-vm", "100Mi")
 				_, err := framework.CreateVirtualMachineFromDefinition(f.KvClient, f.Namespace.Name, vmSpec)
 				Expect(err).ToNot(HaveOccurred())
 				framework.EventuallyDVWith(f.KvClient, f.Namespace.Name, vmSpec.Spec.DataVolumeTemplates[0].Name, 180, HaveSucceeded())

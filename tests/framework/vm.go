@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	alpineUrl               = "docker://quay.io/kubevirt/alpine-container-disk-demo:v1.6.0"
+	AlpineUrl               = "docker://quay.io/kubevirt/alpine-container-disk-demo:v1.6.0"
 	alpineWithGuestAgentUrl = "docker://quay.io/kubevirt/alpine-with-test-tooling-container-disk:v0.57.1"
 	fedoraWithGuestAgentUrl = "docker://quay.io/kubevirt/fedora-with-test-tooling-container-disk:v1.6.0"
 )
@@ -88,7 +88,7 @@ func NewDataVolumeForBlankRawImage(dataVolumeName, size string, storageClass str
 
 // VMs
 func CreateVmWithoutGuestAgent(vmName string, storageClassName string) *v1.VirtualMachine {
-	return CreateVm(vmName, storageClassName, alpineUrl, "1Gi")
+	return CreateVm(vmName, storageClassName, AlpineUrl, "1Gi")
 }
 
 func CreateVmWithGuestAgent(vmName string, storageClassName string) *v1.VirtualMachine {
